@@ -1,0 +1,19 @@
+services:
+  requestreceiver:   
+    container_name: requestreceiver 
+    image: kovarthanan/requestreceiver:5.0
+
+    ports:
+     - 6000:6000
+    volumes:
+      - '.:/file'
+  requestprocessor:
+    container_name: requestprocessor
+    image: kovarthanan/requestprocessor:5.0
+
+    ports:
+     - 3000:3000
+    volumes:
+      - '.:/file'
+
+
