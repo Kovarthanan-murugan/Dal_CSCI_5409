@@ -17,7 +17,7 @@ class EC2OperationsServicer(helloworld_pb2_grpc.EC2OperationsServicer):
         url = "https://"+self.bucketname+".s3.amazonaws.com/"+self.key
         s3.Bucket(self.bucketname).put_object(Key=self.key, Body=data)
         # print(url1)
-        response = helloworld_pb2.StoreReply(s3uri='Data stored successfully')
+        response = helloworld_pb2.StoreReply(s3uri=url)
         return response
 
     def AppendData(self, request, context):
