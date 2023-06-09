@@ -19,7 +19,7 @@ class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
         url = "https://"+self.bucketname+".s3.amazonaws.com/"+self.key
         s3.Bucket(self.bucketname).put_object(Key=self.key, Body=data)
         # print(url1)
-        response = helloworld_pb2.StoreReply(s3uri=url)
+        response = grpc_pb2.StoreReply(s3uri=url)
         return response
 
     def AppendData(self, request, context):
@@ -33,7 +33,7 @@ class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
         updated_content = existing_content + request.data
         print(updated_content)
         s3.put_object(Body=updated_content, Bucket=self.bucketname, Key=self.key)
-        response = helloworld_pb2.AppendReply()
+        response = grpc_pb2.AppendReply()
         return response
 
     def DeleteFile(self, request, context):
@@ -47,7 +47,7 @@ class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
         print(object_key)
         s3 = boto3.client('s3')
         s3.delete_object(Bucket=bucket_name,Key=object_key)
-        response = helloworld_pb2.DeleteReply()
+        response = grpc_pb2.DeleteReply()
         return response
 
 

@@ -16,7 +16,7 @@ _sym_db = _symbol_database.Default()
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10helloworld.proto\x12\x11\x63omputeandstorage\"\x1c\n\x0cStoreRequest\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\x1b\n\nStoreReply\x12\r\n\x05s3uri\x18\x01 \x01(\t\"\x1d\n\rAppendRequest\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\t\"\r\n\x0b\x41ppendReply\"\x1e\n\rDeleteRequest\x12\r\n\x05s3uri\x18\x01 \x01(\t\"\r\n\x0b\x44\x65leteReply2\x82\x02\n\rEC2Operations\x12M\n\tStoreData\x12\x1f.computeandstorage.StoreRequest\x1a\x1d.computeandstorage.StoreReply\"\x00\x12P\n\nAppendData\x12 .computeandstorage.AppendRequest\x1a\x1e.computeandstorage.AppendReply\"\x00\x12P\n\nDeleteFile\x12 .computeandstorage.DeleteRequest\x1a\x1e.computeandstorage.DeleteReply\"\x00\x62\x06proto3')
 
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, globals())
-_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'helloworld_pb2', globals())
+_builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'grpc_pb2', globals())
 if _descriptor._USE_C_DESCRIPTORS == False:
 
   DESCRIPTOR._options = None
