@@ -57,6 +57,12 @@ def serve():
     server.add_insecure_port('[::]:50052')
     server.start()
     print("Server started, listening on port 50051")
+    print("insideserve")
+    callmethod()
+    server.wait_for_termination()
+
+def callmethod():
+    print("insidecall")
     payload = {
         'banner': 'B00936880',
         'ip': '3.82.156.115:50052'
@@ -71,13 +77,14 @@ def serve():
     response = requests.post('http://54.173.209.76:9000/start', data=json.dumps(payload), headers=headers)
     
     # Check the response status code
-    if response.status_code == 201:
+    if response.status_code == 200:
         # Print the response content
-        print(response.json())
+        print(response.text)
     else:
         print('Request failed with status code', response.status_code)
-    server.wait_for_termination()
+
 
 
 if __name__ == '__main__':
     serve()
+    
