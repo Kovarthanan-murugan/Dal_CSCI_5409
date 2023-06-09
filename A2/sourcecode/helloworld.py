@@ -4,6 +4,8 @@ import helloworld_pb2_grpc
 import boto3
 from concurrent import futures
 from urllib.parse import urlparse
+import requests
+import json
 
 class EC2OperationsServicer(helloworld_pb2_grpc.EC2OperationsServicer):
     bucketname = "b00936880learning" 
@@ -55,6 +57,25 @@ def serve():
     server.add_insecure_port('[::]:50052')
     server.start()
     print("Server started, listening on port 50051")
+    payload = {
+        'banner': 'B00936880',
+        'ip': '3.82.156.115:50052'
+    }
+
+    # Set the content type header
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    # Make a POST request
+    response = requests.post('http://54.173.209.76:9000/start', data=json.dumps(payload), headers=headers)
+    
+    # Check the response status code
+    if response.status_code == 201:
+        # Print the response content
+        print(response.json())
+    else:
+        print('Request failed with status code', response.status_code)
     server.wait_for_termination()
 
 
