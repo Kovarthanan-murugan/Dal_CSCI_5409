@@ -58,7 +58,7 @@ def serve():
     server.start()
     print("Server started, listening on port 50051")
     print("insideserve")
-    callmethod()
+    #callmethod()
     server.wait_for_termination()
 
 def callmethod():
