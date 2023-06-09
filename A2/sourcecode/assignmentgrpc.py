@@ -1,13 +1,13 @@
 import grpc
-import helloworld_pb2
-import helloworld_pb2_grpc
+import grpc_pb2
+import grpc_pb2_grpc
 import boto3
 from concurrent import futures
 from urllib.parse import urlparse
 import requests
 import json
 
-class EC2OperationsServicer(helloworld_pb2_grpc.EC2OperationsServicer):
+class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
     bucketname = "b00936880learning" 
     key = "test.txt"
 
@@ -53,19 +53,17 @@ class EC2OperationsServicer(helloworld_pb2_grpc.EC2OperationsServicer):
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    helloworld_pb2_grpc.add_EC2OperationsServicer_to_server(EC2OperationsServicer(), server)
+    grpc_pb2_grpc.add_EC2OperationsServicer_to_server(EC2OperationsServicer(), server)
     server.add_insecure_port('[::]:50052')
     server.start()
     print("Server started, listening on port 50051")
-    print("insideserve")
-    #callmethod()
+    callmethod()
     server.wait_for_termination()
 
 def callmethod():
-    print("insidecall")
     payload = {
         'banner': 'B00936880',
-        'ip': '3.82.156.115:50052'
+        'ip': '54.161.196.203:50052'
     }
 
     # Set the content type header
@@ -76,12 +74,8 @@ def callmethod():
     # Make a POST request
     response = requests.post('http://54.173.209.76:9000/start', data=json.dumps(payload), headers=headers)
     
-    # Check the response status code
-    if response.status_code == 200:
-        # Print the response content
-        print(response.text)
-    else:
-        print('Request failed with status code', response.status_code)
+    print(response.text)
+
 
 
 
