@@ -12,8 +12,6 @@ class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
     key = "test.txt"
 
     def StoreData(self, request, context):
-        # TODO: Implement the logic to store data
-
         s3 = boto3.resource('s3')
         data = request.data
         url = "https://"+self.bucketname+".s3.amazonaws.com/"+self.key
@@ -23,7 +21,6 @@ class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
         return response
 
     def AppendData(self, request, context):
-        # TODO: Implement the logic to append data
         s3 = boto3.client('s3')
         # Retrieve the existing content of the file
         response = s3.get_object(Bucket=self.bucketname, Key=self.key)
@@ -37,8 +34,7 @@ class EC2OperationsServicer(grpc_pb2_grpc.EC2OperationsServicer):
         return response
 
     def DeleteFile(self, request, context):
-        # TODO: Implement the logic to delete a file
-        
+
         parsed_url = urlparse(request.s3uri)
         bucket_name = parsed_url.netloc.split('.')[0]
         object_key = parsed_url.path.lstrip('/')
@@ -82,3 +78,10 @@ def callmethod():
 if __name__ == '__main__':
     serve()
     
+#Refernces
+# [1] gRPC Authors, “Quick start,” gRPC, 2023. 
+# [Online]. Available: https://grpc.io/docs/languages/python/quickstart/. 
+# [Accessed 04 06 2023].
+# [2]  Amazon Web Services, Inc, “Quick start,” Amazon Web Services, Inc, 2023. 
+# [Online]. Available: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html. 
+# [Accessed 04 06 2023].
