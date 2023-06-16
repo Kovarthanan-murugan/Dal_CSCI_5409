@@ -1,0 +1,57 @@
+
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sharedpod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sharedpod
+  template:
+    metadata:
+      labels:
+        app: sharedpod
+    spec:
+      volumes: 
+      - name: sharedcontainer
+        emptyDir: {}
+      containers:
+      - name: container1-app
+        # Replace $LOCATION with your Artifact Registry location (e.g., us-west1).
+        # Replace $GCLOUD_PROJECT with your project ID.
+        image: northamerica-northeast1-docker.pkg.dev/unique-provider-389800/assignment3/container17:2.0
+        # This app listens on port 8080 for web traffic by default.
+        volumeMounts:
+        - name: sharedcontainer
+          mountPath: /kovarthanan_PV_dir
+        ports:
+        - containerPort: 6001
+
+      - name: requestprocessor
+        # Replace $LOCATION with your Artifact Registry location (e.g., us-west1).
+        # Replace $GCLOUD_PROJECT with your project ID.
+        image: northamerica-northeast1-docker.pkg.dev/unique-provider-389800/assignment3/container25:2.0
+        # This app listens on port 8080 for web traffic by default.
+        volumeMounts:
+        - name: sharedcontainer
+          mountPath: /kovarthanan_PV_dir
+        ports:
+        - containerPort: 3001
+
+
+---
