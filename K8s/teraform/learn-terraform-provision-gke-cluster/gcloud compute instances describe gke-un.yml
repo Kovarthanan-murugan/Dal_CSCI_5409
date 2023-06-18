@@ -1,0 +1,3 @@
+gcloud compute instances describe gke-unique-provider--unique-provider--229e5e6d-sbvm --zone=us-central1 --format="flattened(serviceAccounts[].scopes)"
+gcloud container node-pools create NODE_POOL_NAME --cluster=CLUSTER_NAME --zone=us-central1 --scopes="gke-default"
+gcloud container node-pools create unique-provider-389800-gke --cluster=unique-provider-389800-gke --zone=us-central1 --scopes="gke-default"

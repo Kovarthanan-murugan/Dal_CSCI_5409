@@ -1,0 +1,31 @@
+# steps:
+# - name: node
+#   entrypoint: npm
+#   args: ['install']
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: [ 'build', '-t', 'northamerica-northeast1-docker.pkg.dev/$PROJECT_ID/assignment3/container20:2.0', '.' ]
+# images:
+# - 'northamerica-northeast1-docker.pkg.dev/$PROJECT_ID/assignment3/container20:2.0'
+
+steps:
+  - name: node
+    entrypoint: npm
+    args: ['install']
+  # Build Container 1 image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/unique-provider-389800/containerrepo1/container1', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-central1-docker.pkg.dev/unique-provider-389800/containerrepo1/container1']
+  
+  # Deploy Container 1 to GKE
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=./k8dep/
+      - --image=us-central1-docker.pkg.dev/unique-provider-389800/containerrepo1/container1
+      - --location=us-central1
+      - --cluster=cluster-1
+#Reference
+# [1] Google Cloud Services, “Deploying to GKE,” Google Cloud Services., 
+# [Online]. Available: https://cloud.google.com/build/docs/deploying-builds/deploy-gke. 
+#[Accessed 11 06 2023].

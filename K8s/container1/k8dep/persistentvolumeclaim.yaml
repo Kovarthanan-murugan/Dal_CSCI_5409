@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: persistentvolume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+
+#Reference
+# [1] Google Cloud Services, “Persistent volumes and dynamic provisioning, Google Cloud Services.,
+# [Online]. Available: https://cloud.google.com/kubernetes-engine/docs/concepts/persistent-volumes. 
+#[Accessed 15 06 2023].

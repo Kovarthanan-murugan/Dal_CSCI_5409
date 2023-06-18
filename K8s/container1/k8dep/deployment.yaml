@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sharedpod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sharedpod
+  template:
+    metadata:
+      labels:
+        app: sharedpod
+    spec:
+      volumes:
+        - name: sharedcontainer
+          persistentVolumeClaim:
+            claimName: persistentvolume
+      containers:
+      - name: requestreceiver
+        # Replace $LOCATION with your Artifact Registry location (e.g., us-west1).
+        # Replace $GCLOUD_PROJECT with your project ID.
+        image: us-central1-docker.pkg.dev/unique-provider-389800/containerrepo1/container1
+        # This app listens on port 8080 for web traffic by default.
+        volumeMounts:
+        - name: sharedcontainer
+          mountPath: /kovarthanan_PV_dir
+        ports:
+        - containerPort: 6001
+
+      - name: requestprocessor
+        # Replace $LOCATION with your Artifact Registry location (e.g., us-west1).
+        # Replace $GCLOUD_PROJECT with your project ID.
+        image: us-central1-docker.pkg.dev/unique-provider-389800/containerrepo2/container2
+        # This app listens on port 8080 for web traffic by default.
+        volumeMounts:
+        - name: sharedcontainer
+          mountPath: /kovarthanan_PV_dir
+        ports:
+        - containerPort: 3001
+
+#Reference
+# [1] Google Cloud Services, “Deploying to GKE,” Google Cloud Services., 
+# [Online]. Available: https://cloud.google.com/build/docs/deploying-builds/deploy-gke. 
+#[Accessed 11 06 2023].
