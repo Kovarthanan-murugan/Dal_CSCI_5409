@@ -1,0 +1,19 @@
+{
+  "name": "assignment4",
+  "version": "1.0.0",
+  "description": "vpc",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.cs.dal.ca/murugan/cloud-assignment4.git"
+  },
+  "author": "Kovarthanan Murugan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql": "^2.18.1"
+  }
+}
