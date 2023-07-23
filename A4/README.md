@@ -1,5 +1,5 @@
                                             Result
 
-![Output](./result.png)
+![Output](./result.PNG)
 
                                                 
