@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+*{padding: 0;margin: 0;font-family: 'Poppins', sans-serif}
+.container{height:100vh;display:flex;justify-content:center;align-items:center;background-color:#eee}
+.card{width:350px;height:470px;background-color:#fff;box-shadow:0px 15px 30px rgba(0,0,0,0.1);border-radius:10px;overflow:hidden;margin-left:10%}
+.card .info{padding:15px;display:flex;justify-content:space-between;border-bottom:1px solid #e1dede;background-color:#e5e5e5}
+.card .info button{height:30px;width:80px;border:none;color:#fff;border-radius:4px;background-color:#000;cursor:pointer;text-transform:uppercase}
+.card .forms{padding:15px}
+.card .inputs{display:flex;flex-direction:column;margin-bottom:10px}
+.card .inputs span{font-size:12px}
+.card .inputs input{height:40px;padding:0px 10px;font-size:17px;box-shadow:none;outline:none}
+.card .inputs input[readonly]{background-color: rgb(252, 252, 252);}
+.card .inputs input{background-color: rgb(155, 119, 119);}
+
+.card1{width:80%;height:80%;background-color:#fff;box-shadow:0px 15px 30px rgba(0,0,0,0.1);border-radius:10px;overflow:auto;margin-left:10%}
+.card1 .info{padding:15px;display:flex;justify-content:space-between;border-bottom:1px solid #e1dede;background-color:#e5e5e5;    width: 78.5%;
+    position: fixed;}
+.card1 .info button{height:30px;width:80px;border:none;color:#fff;border-radius:4px;background-color:#000;cursor:pointer;text-transform:uppercase}
+.card1 .forms{padding:15px}
+.card1 .inputs{display:flex;flex-direction:column;margin-bottom:10px}
+.card1 .inputs span{font-size:12px}
+.card1 .inputs input{height:40px;padding:0px 10px;font-size:17px;box-shadow:none;outline:none}
+.card1 .inputs input[readonly]{background-color: rgb(252, 252, 252);}
+.card1 .inputs input{background-color: rgb(155, 119, 119);}
+
+.table-cell {
+    border: 1px solid black;
+  }
+.table{
+        margin: 8% 1% 1% 31%;
+}
+#detailsPageBackButton
+{
+    position: absolute;
+    margin: 27% -3% 2% -1%;
+}
+
+.card1 .info input{
+    width: 20%;
+}

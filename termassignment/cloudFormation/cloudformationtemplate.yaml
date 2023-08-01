@@ -1,0 +1,350 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an EC2 instance with Amazon Linux and Git
+
+Resources:
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: MyCustomSecurityGroup
+      GroupDescription: My custom security group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22  # SSH
+          ToPort: 22
+          CidrIp: 0.0.0.0/0   # Allow SSH access from anywhere (open to the world)
+
+        - IpProtocol: tcp
+          FromPort: 3000  # HTTP
+          ToPort: 3000
+          CidrIp: 0.0.0.0/0   # Allow HTTP access from anywhere (open to the world)
+
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0f34c5ae932e6f0e4  # Amazon Linux 2 AMI ID (Replace with the desired region-specific AMI ID)
+      InstanceType: t2.small  # Replace with your preferred instance type
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      KeyName: cloudtermassignment  # Replace with the name of your EC2 Key Pair
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y   # Update the system
+          yum install -y git   # Install Git
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+          nvm install --lts
+          export REACT_APP_TEST_KEY="https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod"
+          export REACT_APP_REGION="us-east-1"
+          export REACT_APP_ACCESS_KEY="ASIA55T6EYUS6QEOWFFL"
+          export REACT_APP_SECRET_KEY="6vXx8qRG7BFaeccC3JEqN3NRklXnW4tQBLbCLNAQ"
+          export REACT_APP_AWS_SESSION_TOKEN="FwoGZXIvYXdzEC4aDDBV41olcB3jEAIMOSLAAajLBdIlYKM/Lgv4zjjW7g2EMdypjaf0kBuFCXHYOYxwhguD7x0XU9My98IBRY1Z47RWCkHT1/KLzxesrXxynKp7Im6xNwIANRIKx1wq9adUogScfEn+ru5USTPNW5bY/4s/DoY62L7n+G65ujuMrbxeL3LxMZT9gJ6O1KFwbs0fphwzx4JgFBBPRtbl96M0T8d+BOZk2Z49GNhNTNtVuYpg7Jtb5ZF36VEdD37+6PHX9o3vlYQkDvt/Owqkqv+NbSiZ6JymBjIt0sV7ozGtIkf2NhoRoprR4XhvxaRjFI6tuZPgyH6zEhslOVRk2L3j6Rd9BCkU"
+          export REACT_APP_BUCKET_NAME=${S3StorageForTaxDocument}
+          export REACT_APP_METHOD_PATH="gettaxdocumentdetails"
+          
+          # MY_AMI_NAME="kova"
+          # echo $MY_AMI_NAME > /home/ec2-user/cloudtermassignment/frontend1/data.txt
+          cd /home/ec2-user
+          git clone https://murugan:B00936880@git.cs.dal.ca/murugan/cloudtermassignment.git
+          cd cloudtermassignment/frontend1
+          
+          # cd cloudtermassignment/testfrontend/my-app
+          node -e "console.log('Running Node.js ' + process.version)"
+          node -e "console.log('REACT_APP_TEST_KEY ' + process.env.REACT_APP_TEST_KEY)"
+          node -e "console.log('REACT_APP_REGION ' + process.env.REACT_APP_REGION)"
+          node -e "console.log('REACT_APP_ACCESS_KEY ' + process.env.REACT_APP_ACCESS_KEY)"
+          node -e "console.log('REACT_APP_SECRET_KEY ' + process.env.REACT_APP_SECRET_KEY)"
+          node -e "console.log('REACT_APP_AWS_SESSION_TOKEN ' + process.env.REACT_APP_AWS_SESSION_TOKEN)"
+          node -e "console.log('REACT_APP_BUCKET_NAME ' + process.env.REACT_APP_BUCKET_NAME)"
+          node -e "console.log('REACT_APP_METHOD_PATH ' + process.env.REACT_APP_METHOD_PATH)"
+          npm install
+          npm start
+
+
+          
+  MyDynamoDBTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: "testExtractformDetails"
+      AttributeDefinitions:
+        - AttributeName: key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  S3StorageForTaxDocument:
+    Type: 'AWS::S3::Bucket'
+    DependsOn: ExampleInvokePermission
+    Properties:
+      BucketName: taxdocumentextractstorage
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:Put
+            Function: !GetAtt [ extractDataFromForm1, Arn]
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - ''
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - ''
+          - AllowedHeaders:
+              - ''
+            AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - ''
+  
+  S3StorageForTaxDocumentPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3StorageForTaxDocument
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:*'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref S3StorageForTaxDocument
+                - /*
+            Principal: '*'
+  ExampleInvokePermission:
+    Type: AWS::Lambda::Permission
+    DependsOn: extractDataFromForm1
+    Properties:
+      FunctionName:
+        Fn::GetAtt:
+          - extractDataFromForm1
+          - Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:aws:s3:::taxdocumentextractstorage
+
+  ECRRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: test
+
+  getDataFromDB1:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "getDataFromDB1"
+      Runtime: "nodejs18.x"
+      Handler: "index.handler"
+      Timeout: 900
+      Environment:
+        Variables:
+          Extracted_Data_Table: !Ref MyDynamoDBTable
+          SNS_Topic_Alert_Arn: !Ref SendAlertToUser
+      Role: "arn:aws:iam::956968518949:role/LabRole"
+      Code:
+        S3Bucket: "b00936880cloudtermassignmentcode"
+        S3Key: "getDataFromDB.zip"
+  writeDataInDB1:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: "writeDataInDB1"
+      Runtime: "nodejs18.x"
+      Handler: "index.handler"
+      Timeout: 900
+      Environment:
+        Variables:
+          Extracted_Data_Table: !Ref MyDynamoDBTable
+          SNS_Topic_Alert_Arn: !Ref SendAlertToUser
+      Role: "arn:aws:iam::956968518949:role/LabRole"
+      Code:
+        S3Bucket: "b00936880cloudtermassignmentcode"
+        S3Key: "writeDataInDB.zip"
+  extractDataFromForm1:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        ImageUri: "956968518949.dkr.ecr.us-east-1.amazonaws.com/textextract:latest"
+      FunctionName: "extractDataFromForm1"
+      PackageType: "Image"
+      Timeout: 900
+      Environment:
+        Variables:
+          aws_access_key_id: 'ASIA55T6EYUS6QEOWFFL'
+          aws_secret_access_key: '6vXx8qRG7BFaeccC3JEqN3NRklXnW4tQBLbCLNAQ'
+          aws_session_token: 'FwoGZXIvYXdzEC4aDDBV41olcB3jEAIMOSLAAajLBdIlYKM/Lgv4zjjW7g2EMdypjaf0kBuFCXHYOYxwhguD7x0XU9My98IBRY1Z47RWCkHT1/KLzxesrXxynKp7Im6xNwIANRIKx1wq9adUogScfEn+ru5USTPNW5bY/4s/DoY62L7n+G65ujuMrbxeL3LxMZT9gJ6O1KFwbs0fphwzx4JgFBBPRtbl96M0T8d+BOZk2Z49GNhNTNtVuYpg7Jtb5ZF36VEdD37+6PHX9o3vlYQkDvt/Owqkqv+NbSiZ6JymBjIt0sV7ozGtIkf2NhoRoprR4XhvxaRjFI6tuZPgyH6zEhslOVRk2L3j6Rd9BCkU'
+          testvariable: 'sathish'
+          snsTopicArn: !Ref SendExtractDataToWrite
+      Role: "arn:aws:iam::956968518949:role/LabRole"
+  SendExtractDataToWrite:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub 'sendExtractDataToWriteSNS'
+      TopicName: !Sub 'sendExtractDataToWriteSNS'
+      Subscription:
+        - Protocol: lambda
+          Endpoint: !GetAtt writeDataInDB1.Arn
+  writeDataInDB1InvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref writeDataInDB1
+      Principal: sns.amazonaws.com   
+
+  SendExtractDataToWritePolicy:
+    Type: 'AWS::SNS::TopicPolicy'
+    Properties:
+      Topics:
+        - !Ref SendExtractDataToWrite
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 'sns:Publish'
+            Resource: !Ref SendExtractDataToWrite
+            Principal:
+              AWS: '*'
+            Condition:
+              ArnLike:
+                AWS:SourceArn: !Sub 'arn:aws:*:*:${AWS::AccountId}:*'
+
+  SendAlertToUser:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub 'sendAlertToUser'
+      TopicName: !Sub 'sendAlertToUser'
+
+
+
+  ApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: getTaxDocumentAPI
+
+  getDataFromDB1Permission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !Ref getDataFromDB1
+      Action: "lambda:InvokeFunction"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiGateway}/*/*"
+
+  GettaxDocumentDetails:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ParentId: !GetAtt ApiGateway.RootResourceId
+      PathPart: "gettaxdocumentdetails"
+
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId: !Ref ApiGateway
+      ResourceId: !Ref GettaxDocumentDetails
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key'"
+              "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE'"
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            ResponseTemplates:
+              "application/json": ""
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          "application/json": '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": true
+            "method.response.header.Access-Control-Allow-Methods": true
+            "method.response.header.Access-Control-Allow-Origin": true
+          ResponseModels:
+            "application/json": "Empty"
+
+  GettaxDocumentDetailsMethod:
+    Type: "AWS::ApiGateway::Method"
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResourceId: !Ref GettaxDocumentDetails
+      AuthorizationType: NONE
+      HttpMethod: ANY
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: ANY
+        Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getDataFromDB1.Arn}/invocations"
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: $input.json('$')
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+        RequestTemplates:
+          application/json: $input.json('$')
+      RequestParameters:
+        method.request.querystring.name: false
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: "200"
+
+  ApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - GettaxDocumentDetailsMethod
+    Properties:
+      RestApiId: !Ref ApiGateway
+
+  ApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref ApiGateway
+      DeploymentId: !Ref ApiDeployment
+      StageName: prod
+      Description: Production Stage
+
+# Outputs for the project
+Outputs:
+  APIGatewayURL:
+    Description: "API Gateway URL"
+    Value: !Sub "https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/prod"
+
